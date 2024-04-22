@@ -7,7 +7,7 @@ const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 
 const createEpic = async (summary, description) => {
   try {
-    const response = await axios.post(`${JIRA_HOST}/rest/api/2/issue`, {
+    const response = await axios.post(`${JIRA_HOST}/rest/api/2/epic`, {
       fields: {
         project: {
           key: 'PRB' // Cambia esto por la clave de tu proyecto en Jira
