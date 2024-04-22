@@ -2,11 +2,14 @@ const axios = require('axios');
 require('dotenv').config();
 
 const JIRA_HOST = process.env.JIRA_HOST;
+const DOMAIN = process.env.DOMAIN
 const JIRA_USERNAME = process.env.JIRA_USERNAME;
 const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY; // Clave del proyecto de Jira
 
+
 const createIssues = async (issues) => {
+
   try {
     // Mapear el array de issues para enviar solicitudes de creación en paralelo
     const responses = await Promise.all(issues.map(async (issue) => {
@@ -58,6 +61,7 @@ const getIssues = async () => {
     throw error;
   }
 };
+
 module.exports = {
   createIssues,
   getIssues
