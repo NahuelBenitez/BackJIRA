@@ -24,6 +24,16 @@ router.post('/issues', async (req, res, next) => {
     next(error); 
   }
 });
+//ruta para getIssues
+router.get('/issues', async (req, res, next) => {
+  try {
+    const issues = await getIssues();
+    res.status(200).json(issues);
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 //Ruta para subir archivos:
 router.post('/upload',async (req,res) => {

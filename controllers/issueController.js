@@ -40,7 +40,25 @@ const createIssues = async (issues) => {
     throw error;
   }
 };
-
+const getIssues = async () => {
+  try {
+    const response = await axios.get(`${JIRA_HOST}/rest/api/2/search`, {
+      auth: {
+        username: JIRA_USERNAME,
+        password: JIRA_API_TOKEN
+      },
+      params: {
+        jql: `project=${JIRA_PROJECT_KEY}`,
+        fields: 'summary,description,issuetype,labels'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las issues:', error.response.data);
+    throw error;
+  }
+};
 module.exports = {
-  createIssues
+  createIssues,
+  getIssues
 };
