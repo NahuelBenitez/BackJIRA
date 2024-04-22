@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { createEpic } = require('../controllers/epicController');
-const { createIssue } = require('../controllers/issueController');
+const { createIssues } = require('../controllers/issueController');
 
 // Ruta para crear una nueva epic
 router.post('/epics', async (req, res, next) => {
@@ -16,15 +16,14 @@ router.post('/epics', async (req, res, next) => {
 
 // Ruta para crear una nueva issue
 router.post('/issues', async (req, res, next) => {
-    try {
-      const { summary, description, issueType, labels } = req.body; // Asegúrate de obtener también issueType del cuerpo de la solicitud
-      const issue = await createIssue(summary, description, issueType, labels); // Asegúrate de pasar issueType como argumento a createIssue
-      res.status(201).json(issue);
-    } catch (error) {
-      next(error); 
-    }
-  });
-  
+  try {
+    const issues = req.body; 
+    const createdIssues = await createIssues(issues); 
+    res.status(201).json(createdIssues);
+  } catch (error) {
+    next(error); 
+  }
+});
 
 router.use((err, req, res, next) => {
   console.error(err);

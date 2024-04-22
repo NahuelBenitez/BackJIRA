@@ -6,38 +6,41 @@ const JIRA_USERNAME = process.env.JIRA_USERNAME;
 const JIRA_API_TOKEN = process.env.JIRA_API_TOKEN;
 const JIRA_PROJECT_KEY = process.env.JIRA_PROJECT_KEY; // Clave del proyecto de Jira
 
-const createIssue = async (summary, description, issueType,labels) => {
+const createIssues = async (issues) => {
   try {
-    const response = await axios.post(`${JIRA_HOST}/rest/api/2/issue`, {
-      fields: {
-        project: {
-          key: JIRA_PROJECT_KEY 
+    // Mapear el array de issues para enviar solicitudes de creación en paralelo
+    const responses = await Promise.all(issues.map(async (issue) => {
+      const response = await axios.post(`${JIRA_HOST}/rest/api/2/issue`, {
+        fields: {
+          project: {
+            key: JIRA_PROJECT_KEY
+          },
+          summary: issue.summary,
+          description: issue.description,
+          issuetype: {
+            name: issue.issueType
+          },
+          labels: issue.labels || []
+        }
+      }, {
+        auth: {
+          username: JIRA_USERNAME,
+          password: JIRA_API_TOKEN
         },
-        summary: summary,
-        description: description,
-        issuetype: {
-          name: issueType,
-        },
-       
-        labels: labels || []
-      }
-    }, {
-      auth: {
-        username: JIRA_USERNAME,
-        password: JIRA_API_TOKEN
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    }));
 
-    return response.data;
+    return responses;
   } catch (error) {
-    console.error('Error al crear la issue:', error.response.data);
+    console.error('Error al crear las issues:', error.response.data);
     throw error;
   }
 };
 
 module.exports = {
-  createIssue
+  createIssues
 };
