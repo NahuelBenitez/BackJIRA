@@ -79,7 +79,7 @@ router.post('/createAll', async (req, res) => {
     // Filtrar los issues que pertenecen a esta épica
     let childIssues = dataParsedExcel.filter(issue => issue.FASE === epic.fields.summary);
     // Añadir el campo "childs" a la épica actual
-
+console.log(childIssues);
     epic.childs = epic.childs || [];
     epic.childs.push(...childIssues);
   })
