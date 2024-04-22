@@ -72,17 +72,47 @@ router.post('/upload', async (req, res) => {
 })
 
 router.post('/createAll', async (req, res) => {
-  let dataParsedExcel = await readExcel('Hoja 1')
-  let issues = await getIssues()
+  try {
+    let dataParsedExcel = await readExcel('Hoja 1')
+    let issues = await getIssues()
 
-  let epicIssues = issues.filter(issue => issue.fields.issuetype.name === "Epic").forEach(epic => {
-    // Filtrar los issues que pertenecen a esta épica
-    let childIssues = dataParsedExcel.filter(issue => issue.FASE === epic.fields.summary);
-    // Añadir el campo "childs" a la épica actual
-console.log(childIssues);
-    epic.childs = epic.childs || [];
-    epic.childs.push(...childIssues);
-  })
+    let epicIssues = issues.filter(issue => issue.fields.issuetype.name === "Epic")
+    
+    let epicWithChilds = epicIssues.map(epic => {
+      // Filtrar los issues que pertenecen a esta épica
+      let childIssues = dataParsedExcel.filter(issue => issue.FASE === epic.fields.summary);
+      // Añadir el campo "childs" a la épica actual
+
+      epic.childs = epic.childs || [];
+      epic.childs.push(...childIssues);
+      
+      return epic
+    })
+   
+    
+    epicIssues.forEach(issue => {
+      issue.childs.forEach(async child => {
+        await createIssue({
+          summary: child.NOMBRE,
+          description: '',
+          issueType: 'Task',
+          labels: [child.GRUPO],
+          parent: {
+            key: `${issue.key}`
+          }
+        })
+      })
+    })
+    
+
+    res.json({
+      message:"Todo correcto!"
+    })
+
+  } catch (err) {
+    console.log(err)
+    res.status(400)
+  }
 })
 
 router.use((err, req, res, next) => {
