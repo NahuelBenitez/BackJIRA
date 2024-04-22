@@ -16,18 +16,18 @@ router.post('/epics', async (req, res, next) => {
     const epic = await createEpic(summary, description);
     res.status(201).json(epic);
   } catch (error) {
-    next(error); 
+    next(error);
   }
 });
 
 // Ruta para crear una nueva issue
 router.post('/issues', async (req, res, next) => {
   try {
-    const issues = req.body; 
-    const createdIssues = await createIssues(issues); 
+    const issues = req.body;
+    const createdIssues = await createIssues(issues);
     res.status(201).json(createdIssues);
   } catch (error) {
-    next(error); 
+    next(error);
   }
 });
 //ruta para getIssues
@@ -42,28 +42,28 @@ router.get('/issues', async (req, res, next) => {
 
 
 //Ruta para subir archivos:
-router.post('/upload',async (req,res) => {
-  try{
-    if(!req.files){
+router.post('/upload', async (req, res) => {
+  try {
+    if (!req.files) {
       res.status(400).json({
-        message:"Seleccione un archivo"
+        message: "Seleccione un archivo"
       })
-    }else{
+    } else {
       let file = req.files.datos
       file.mv("./uploads/" + file.name)
-      
+
 
 
       res.status(200).json({
-        message:"Archivo subido con exito",
+        message: "Archivo subido con exito",
         data: {
-         name: file.name,
-         size: file.size,
-         type: file.mimetype
+          name: file.name,
+          size: file.size,
+          type: file.mimetype
         }
       })
     }
-  }catch(err){
+  } catch (err) {
     console.log(err)
     res.status(500).json({
       err
@@ -71,23 +71,18 @@ router.post('/upload',async (req,res) => {
   }
 })
 
-router.post('/createAll',async (req,res) =>{
+router.post('/createAll', async (req, res) => {
   let dataParsedExcel = await readExcel('Hoja 1')
   let issues = await getIssues()
 
-  let epicIssues = issues.filter(issue => issue.fields.issuetype.name === "Epic")
-  
-
-  epicIssues.forEach(epic => {
+  let epicIssues = issues.filter(issue => issue.fields.issuetype.name === "Epic").forEach(epic => {
     // Filtrar los issues que pertenecen a esta épica
     let childIssues = dataParsedExcel.filter(issue => issue.FASE === epic.fields.summary);
     // Añadir el campo "childs" a la épica actual
 
     epic.childs = epic.childs || [];
     epic.childs.push(...childIssues);
-});
-
-  res.json(epicIssues)
+  })
 })
 
 router.use((err, req, res, next) => {
