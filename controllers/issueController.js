@@ -23,7 +23,10 @@ const createIssues = async (issues) => {
           issuetype: {
             name: issue.issueType
           },
-          labels: issue.labels || []
+          labels: issue.labels || [],
+          parent: {
+            key: issue.parent.key
+          }
         }
       }, {
         auth: {
@@ -34,6 +37,7 @@ const createIssues = async (issues) => {
           'Content-Type': 'application/json'
         }
       });
+      console.log(issue);
       return response.data;
     }));
 
