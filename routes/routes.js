@@ -34,7 +34,6 @@ router.post('/issues', async (req, res, next) => {
 router.get('/issues', async (req, res, next) => {
   try {
     const issues = await getIssues();
-    console.log('hola')
     res.status(200).json(issues);
   } catch (error) {
     next(error);
@@ -77,8 +76,18 @@ router.post('/createAll',async (req,res) =>{
   let issues = await getIssues()
 
   let epicIssues = issues.filter(issue => issue.fields.issuetype.name === "Epic")
+  
 
-  console.log(epicIssues)
+  epicIssues.forEach(epic => {
+    // Filtrar los issues que pertenecen a esta épica
+    let childIssues = dataParsedExcel.filter(issue => issue.FASE === epic.fields.summary);
+    // Añadir el campo "childs" a la épica actual
+
+    epic.childs = epic.childs || [];
+    epic.childs.push(...childIssues);
+});
+
+  res.json(epicIssues)
 })
 
 router.use((err, req, res, next) => {
