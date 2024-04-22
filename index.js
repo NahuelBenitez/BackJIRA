@@ -4,9 +4,17 @@ const app = express();
 const routes = require('./routes/routes');
 const { createEpic } = require('./controllers/epicController');
 const { createIssue } = require('./controllers/issueController');
+const morgan = require('morgan');
+const fileUpload = require('express-fileupload')
+const cors = require('cors')
 
 // Middleware para manejar solicitudes JSON
 app.use(express.json());
+app.use(morgan('dev'))
+app.use(cors())
+app.use(fileUpload({
+  createParentPath: true
+}))
 
 // Rutas API
 app.use('/api', routes);
@@ -31,6 +39,7 @@ const createEpicAndIssue = async () => {
     console.error('Error:', error);
   }
 };
+
 
 // Llamar a la función para crear una nueva epic y una nueva issue
 // createEpicAndIssue();
