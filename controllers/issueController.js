@@ -55,7 +55,7 @@ const getIssues = async () => {
         fields: 'summary,description,issuetype,labels'
       }
     });
-    return response.data;
+    return response.data.issues;
   } catch (error) {
     console.error('Error al obtener las issues:', error.response.data);
     throw error;
